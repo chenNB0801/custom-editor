@@ -30,6 +30,10 @@
     </extensions>
 
     <actions>
+        <action class="com.lang.project.SwitchProject" id="com.lang.project.SwitchProject" text="Switch Project Window">
+            <add-to-group group-id="WindowMenu" relative-to-action="PreviousProjectWindow" anchor="after"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control alt p"/>
+        </action>
     </actions>
 
 </idea-plugin>
