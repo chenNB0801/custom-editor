@@ -35,6 +35,7 @@ public class SwitchProject extends AnAction {
 		List<Project> allProject = new ArrayList<>(Arrays.asList(projects));
 		allProject.remove(project);
 		if (projects.length == 1) {
+			ProjectListPopupStep.switchSpecifyProjectWindow(allProject.get(0));
 			return;
 		}
 		ListPopup listPopup = JBPopupFactory.getInstance()

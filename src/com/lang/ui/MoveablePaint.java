@@ -1,15 +1,16 @@
 package com.lang.ui;
 
 import com.intellij.ui.JBColor;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import java.awt.image.BufferedImage;
+import javax.swing.*;
+
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 /**
  * @author guoliang
@@ -24,6 +25,8 @@ public class MoveablePaint extends JPanel implements MouseMotionListener, MouseL
 	private boolean pressIn = false;
 	private int lastx;
 	private int lasty;
+	private BufferedImage bi;
+	private Graphics2D big;
 
 
 	public MoveablePaint() {
@@ -33,6 +36,7 @@ public class MoveablePaint extends JPanel implements MouseMotionListener, MouseL
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		MoveablePaint moveablePaint = new MoveablePaint();
 		frame.getContentPane().add(moveablePaint);
 		frame.setSize(800, 800);
@@ -40,11 +44,16 @@ public class MoveablePaint extends JPanel implements MouseMotionListener, MouseL
 	}
 
 	@Override
-	public void paint(Graphics g1) {
-		super.paint(g1);
+	public void update(Graphics g1) {
 		Graphics2D g = (Graphics2D) g1;
-		g.setColor(JBColor.BLUE);
-		g.fill(rectangle);
+		if (this.bi == null) {
+			this.bi = (BufferedImage) createImage(rectangle.width, rectangle.height);
+			this.big = this.bi.createGraphics();
+		}
+		this.big.setColor(Color.BLUE);
+		this.big.fill(this.rectangle);
+		g.drawImage(this.bi, 0, 0, this);
+		paint(g1);
 	}
 
 
