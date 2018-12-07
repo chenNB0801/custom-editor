@@ -34,7 +34,7 @@ public class SwitchProject extends AnAction {
 		Project[] projects = ProjectManager.getInstance().getOpenProjects();
 		List<Project> allProject = new ArrayList<>(Arrays.asList(projects));
 		allProject.remove(project);
-		if (projects.length == 1) {
+		if (allProject.size() == 1) {
 			ProjectListPopupStep.switchSpecifyProjectWindow(allProject.get(0));
 			return;
 		}
