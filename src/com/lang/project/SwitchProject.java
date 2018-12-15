@@ -7,14 +7,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.project.ex.ProjectManagerEx;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.util.text.StringUtil;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -36,10 +33,10 @@ public class SwitchProject extends AnAction {
 		Project project = e.getData(CommonDataKeys.PROJECT);
 		if (null == project) return;
 		Project[] projects = ProjectManager.getInstance().getOpenProjects();
-		List<Project> allProject = new ArrayList<>(Arrays.asList(projects));
-		allProject.remove(project);
+		Set<ProjectModel> projectModelSet = new LinkedHashSet<>(ProjectModel.getProjectModels(projects));
+		projectModelSet.remove(new ProjectModel(project.getName(), project.getBasePath()));
 
-		List<Project> recentProjects = new ArrayList<>();
+		Set<ProjectModel> recentProjectSet = new LinkedHashSet<>();
 		AnAction[] actions = RecentProjectsManager.getInstance().getRecentProjectsActions(false);
 		for (AnAction action : actions) {
 			if (!(action instanceof ReopenProjectAction)) {
@@ -49,31 +46,20 @@ public class SwitchProject extends AnAction {
 			if (StringUtil.equals(reopenProjectAction.getProjectPath(), project.getBasePath())) {
 				continue;
 			}
-
-			boolean contained = false;
-			for (Project openedProject : allProject) {
-				if (StringUtil.equals(reopenProjectAction.getProjectPath(), openedProject.getBasePath())) {
-					contained = true;
-					break;
-				}
-			}
-			try {
-				if (!contained) {
-					recentProjects.add(ProjectManagerEx.getInstanceEx().loadProject(reopenProjectAction.getProjectPath()));
-				}
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			ProjectModel projectModel = new ProjectModel(reopenProjectAction.getProjectName(), reopenProjectAction.getProjectPath());
+			if (!projectModelSet.contains(projectModel)) {
+				recentProjectSet.add(projectModel);
 			}
 		}
 
-		allProject.addAll(recentProjects);
-		if (allProject.size() == 1) {
-			ProjectListPopupStep.switchSpecifyProjectWindow(allProject.get(0));
-			return;
-		}
-		ListPopup listPopup = JBPopupFactory.getInstance()
-				.createListPopup(new ProjectListPopupStep("", allProject, recentProjects.isEmpty() ? null : recentProjects.get(0)));
-		listPopup.showInFocusCenter();
+		List<ProjectModel> recentProjectModelList = new ArrayList<>(recentProjectSet);
+		List<ProjectModel> projectModelList = new ArrayList<>(projectModelSet);
+		projectModelList.addAll(recentProjectModelList);
+
+		ProjectModel separateProject = recentProjectModelList.isEmpty() ? null : recentProjectModelList.get(0);
+		ProjectListPopupStep projectListPopupStep = new ProjectListPopupStep("", projectModelList, separateProject);
+		ListPopup listPopup = JBPopupFactory.getInstance().createListPopup(projectListPopupStep);
+		listPopup.showCenteredInCurrentWindow(project);
 	}
 
 
