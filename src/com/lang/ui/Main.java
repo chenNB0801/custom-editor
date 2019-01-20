@@ -21,8 +21,7 @@ public class Main extends JFrame {
         contentPanel.add(panel, BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createLineBorder(JBColor.ORANGE, 2));
 
-        RectangleModel panel1 = new RectangleModel(130, 130);
-        panel.add(panel1);
+        panel.add(new ClassModel(new Rectangle(130, 130)));
     }
 
     public static void main(String[] args) {

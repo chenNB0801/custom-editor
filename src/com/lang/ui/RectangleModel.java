@@ -1,5 +1,7 @@
 package com.lang.ui;
 
+import com.intellij.ui.JBColor;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -9,17 +11,16 @@ public class RectangleModel extends BaseModel {
 	private int startX, startY;
 	private BufferedImage bi;
 	private Graphics2D big = null;
-	private Rectangle area;
-	private Rectangle rect;
+	private Rectangle rectangle;
 
 
-	public RectangleModel(int width, int height) {
+	public RectangleModel(Rectangle rectangle) {
+		this.rectangle = rectangle;
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
-		this.setBounds(80, 80, width, height);
-		this.setBackground(Color.GRAY);
+		this.setBounds(rectangle);
+		this.setBackground(Color.getColor("#FFECD9"));
 		this.setDoubleBuffered(true);
-		this.rect = this.getBounds();
 	}
 
 	@Override
@@ -29,20 +30,22 @@ public class RectangleModel extends BaseModel {
 			Dimension dim = this.getSize();
 			int w = dim.width;
 			int h = dim.height;
-			this.area = new Rectangle(dim);
-			rect.setLocation(w / 2 - 50, h / 2 - 25);
+			rectangle.setLocation(w / 2 - 50, h / 2 - 25);
 			bi = (BufferedImage) this.createImage(w, h);
 			big = bi.createGraphics();
 		}
-		big.setColor(Color.WHITE);
-		big.clearRect(rect.x, rect.y, rect.width, rect.height);
+		big.setColor(JBColor.WHITE);
+		big.clearRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
-		big.setColor(Color.GRAY);
-		big.fill(rect);
+		big.setColor(Color.WHITE);
+		big.fill(rectangle);
 
 		big.setStroke(new BasicStroke(5));
-		big.setColor(Color.BLUE);
-		big.draw(rect);
+		big.setColor(JBColor.BLUE);
+		big.draw(rectangle);
+
+		paint(big);
+
 		g2.drawImage(this.bi, 0, 0, this);
 	}
 
